@@ -3,7 +3,6 @@ import pickle
 import os
 import sys
 
-# --- Resolve paths safely ---
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_PATH = os.path.join(CURRENT_DIR, "..", "src")
 MODELS_PATH = os.path.join(CURRENT_DIR, "..", "models")
@@ -16,7 +15,6 @@ st.set_page_config(page_title="Movie Recommendation System")
 
 st.title("🎬 Movie Recommendation System")
 
-# --- Load model files safely ---
 movies_path = os.path.join(MODELS_PATH, "movies.pkl")
 similarity_path = os.path.join(MODELS_PATH, "similarity.pkl")
 

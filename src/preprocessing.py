@@ -4,7 +4,7 @@ def convert(text):
     return [i['name'] for i in ast.literal_eval(text)]
 
 def get_top_cast(text):
-    return [i['name'] for i in ast.literal_eval(text)[:3]]
+    return [i['name'] for i in ast.literal_eval(text)[:5]]
 
 def get_director(text):
     for i in ast.literal_eval(text):
@@ -20,12 +20,16 @@ def create_tags(df):
     df['crew'] = df['crew'].apply(get_director)
 
     df['tags'] = (
-        df['overview']
-        + df['genres']
-        + df['keywords']
-        + df['cast']
-        + df['crew'].apply(lambda x: [x])
-    )
+    df['overview']
+    + df['genres']
+    + df['keywords']
+    + df['cast']
+    + df['cast']
+    + df['cast']
+    + df['crew'].apply(lambda x: [x])
+    + df['crew'].apply(lambda x: [x])
+    + df['crew'].apply(lambda x: [x])
+)
 
     df['tags'] = df['tags'].apply(lambda x: " ".join(x).lower())
     return df[['id', 'title', 'tags']]

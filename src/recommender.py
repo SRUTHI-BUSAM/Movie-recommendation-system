@@ -7,8 +7,19 @@ def train_model(df):
     similarity = cosine_similarity(vectors)
     return similarity
 
-def recommend(movie, df, similarity, top_n=5):
+def recommend(movie, df, similarity, top_n=4):
     index = df[df['title'] == movie].index[0]
     scores = list(enumerate(similarity[index]))
     scores = sorted(scores, key=lambda x: x[1], reverse=True)[1:top_n+1]
-    return [df.iloc[i[0]].title for i in scores]
+    recommended = []
+
+    for i in scores:
+
+        recommended.append(
+            (
+                df.iloc[i[0]].title,
+                round(i[1] * 100, 2)
+            )
+        )
+
+    return recommended

@@ -104,10 +104,6 @@ sys.path.insert(0, SRC_PATH)
 
 from recommender import build_model,recommend
 import recommender
-
-st.write("RECOMMENDER FILE:", recommender.__file__)
-st.write("HAS BUILD MODEL:", hasattr(recommender, "build_model"))
-st.write("HAS RECOMMEND:", hasattr(recommender, "recommend"))
 st.markdown("""
 <style>
 

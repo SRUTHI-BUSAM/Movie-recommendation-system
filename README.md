@@ -1,35 +1,46 @@
 # 🎬 Movie Recommendation System
 
-An end-to-end **content-based movie recommendation system** built using Machine Learning techniques and deployed with **Streamlit**.
+A content-based Movie Recommendation System built using Python, Machine Learning, Streamlit, and the TMDB API.
 
-This project recommends movies similar to the one selected by the user based on movie metadata such as genres, keywords, cast, and overview.
+The system recommends movies similar to the movie selected by the user using **TF-IDF vectorization** and **Cosine Similarity**. It also provides movie posters, ratings, release years, overviews, trailers, and a personal watchlist.
 
----
+## 🚀 Live Demo
 
-## 🚀 Features
-- Content-based movie recommendations
-- Uses **TF-IDF Vectorization** and **Cosine Similarity**
-- Interactive web interface using Streamlit
-- Clean, modular, and production-style project structure
-- Suitable for ML internships and placements
+👉 [Movie Recommendation System](https://movie-recommendation-system-98mqukhjm7svn4ruu7hfnr.streamlit.app/)
 
----
+## 📌 Features
+
+- 🔍 Search for movies
+- 🎬 Select a movie from the dataset
+- 🎯 Get similar movie recommendations
+- 📊 Content-based recommendation using TF-IDF
+- 🔗 Cosine similarity for finding similar movies
+- ⭐ Display TMDB movie ratings
+- 🖼️ Display movie posters
+- 📅 Display movie release year
+- ℹ️ View movie overview and details
+- ▶️ Watch movie trailers through YouTube
+- ❤️ Add movies to a personal watchlist
+- ❌ Remove movies from the watchlist
+- ☁️ Deployed using Streamlit Community Cloud
 
 ## 🧠 How It Works
-1. Movie metadata (genres, keywords, cast, overview) is combined into a single text feature called **tags**
-2. Tags are vectorized using **TF-IDF**
-3. **Cosine similarity** is calculated between all movies
-4. Based on user selection, the most similar movies are recommended
 
----
+The recommendation system follows a content-based filtering approach.
 
-## 🛠 Tech Stack
-- Python
-- Pandas
-- NumPy
-- Scikit-learn
-- Streamlit
-
----
-
-## 📂 Project Structure
+```text
+Movie Dataset
+      ↓
+Data Preprocessing
+      ↓
+Movie Tags
+      ↓
+TF-IDF Vectorization
+      ↓
+Movie Feature Vectors
+      ↓
+Cosine Similarity
+      ↓
+Find Similar Movies
+      ↓
+Top 4 Recommendations

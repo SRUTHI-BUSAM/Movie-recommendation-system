@@ -3,8 +3,9 @@ import pickle
 import os
 import sys
 import requests
+from dotenv import load_dotenv
 
-
+load_dotenv()
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
 def fetch_movie_details(movie_name):
@@ -110,11 +111,8 @@ for saved_movie in st.session_state.watchlist:
         st.rerun()
 
 movies_path = os.path.join(MODELS_PATH, "movies.pkl")
-similarity_path = os.path.join(MODELS_PATH, "similarity.pkl")
 
 movies = pickle.load(open(movies_path, "rb"))
-similarity = pickle.load(open(similarity_path, "rb"))
-
 movie_list = movies['title'].values
 
 search_movie = st.text_input(
@@ -134,8 +132,7 @@ if st.button("Recommend"):
 
     st.session_state.recommendations = recommend(
         selected_movie,
-        movies,
-        similarity
+        movies
     )
 
 recommendations = st.session_state.recommendations

@@ -2,7 +2,7 @@
 data/
 
 # model files
-models/
+models/similarity.pkl
 
 # python cache
 __pycache__/

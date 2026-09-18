@@ -2,8 +2,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-def recommend(movie, df, top_n=4):
-
+def train_model(df):
     tfidf = TfidfVectorizer(
         max_features=5000,
         stop_words="english"
@@ -11,24 +10,32 @@ def recommend(movie, df, top_n=4):
 
     vectors = tfidf.fit_transform(df["tags"])
 
-    movie_index = df[df["title"] == movie].index[0]
+    similarity = cosine_similarity(vectors)
 
-    movie_vector = vectors[movie_index]
+    return similarity
 
-    scores = cosine_similarity(
-        movie_vector,
-        vectors
-    ).flatten()
 
-    movie_indices = scores.argsort()[::-1][1:top_n + 1]
+def recommend(movie, df, top_n=4):
+
+    similarity = train_model(df)
+
+    index = df[df["title"] == movie].index[0]
+
+    scores = list(enumerate(similarity[index]))
+
+    scores = sorted(
+        scores,
+        key=lambda x: x[1],
+        reverse=True
+    )[1:top_n + 1]
 
     recommended = []
 
-    for i in movie_indices:
+    for i in scores:
         recommended.append(
             (
-                df.iloc[i]["title"],
-                round(scores[i] * 100, 2)
+                df.iloc[i[0]]["title"],
+                round(i[1] * 100, 2)
             )
         )
 

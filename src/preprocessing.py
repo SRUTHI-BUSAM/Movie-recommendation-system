@@ -1,35 +1,44 @@
-import ast
+import streamlit as st
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-def convert(text):
-    return [i['name'] for i in ast.literal_eval(text)]
 
-def get_top_cast(text):
-    return [i['name'] for i in ast.literal_eval(text)[:5]]
+@st.cache_resource
+def train_model(df):
+    tfidf = TfidfVectorizer(
+        max_features=5000,
+        stop_words="english"
+    )
 
-def get_director(text):
-    for i in ast.literal_eval(text):
-        if i['job'] == 'Director':
-            return i['name']
-    return ""
+    vectors = tfidf.fit_transform(df["tags"])
 
-def create_tags(df):
-    df['overview'] = df['overview'].apply(lambda x: x.split())
-    df['genres'] = df['genres'].apply(convert)
-    df['keywords'] = df['keywords'].apply(convert)
-    df['cast'] = df['cast'].apply(get_top_cast)
-    df['crew'] = df['crew'].apply(get_director)
+    similarity = cosine_similarity(vectors)
 
-    df['tags'] = (
-    df['overview']
-    + df['genres']
-    + df['keywords']
-    + df['cast']
-    + df['cast']
-    + df['cast']
-    + df['crew'].apply(lambda x: [x])
-    + df['crew'].apply(lambda x: [x])
-    + df['crew'].apply(lambda x: [x])
-)
+    return similarity
 
-    df['tags'] = df['tags'].apply(lambda x: " ".join(x).lower())
-    return df[['id', 'title', 'tags']]
+
+def recommend(movie, df, top_n=4):
+
+    similarity = train_model(df)
+
+    index = df[df["title"] == movie].index[0]
+
+    scores = list(enumerate(similarity[index]))
+
+    scores = sorted(
+        scores,
+        key=lambda x: x[1],
+        reverse=True
+    )[1:top_n + 1]
+
+    recommended = []
+
+    for i in scores:
+        recommended.append(
+            (
+                df.iloc[i[0]]["title"],
+                round(i[1] * 100, 2)
+            )
+        )
+
+    return recommended

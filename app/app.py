@@ -99,9 +99,15 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_PATH = os.path.join(CURRENT_DIR, "..", "src")
 MODELS_PATH = os.path.join(CURRENT_DIR, "..", "models")
 
-sys.path.append(SRC_PATH)
+sys.path.insert(0, SRC_PATH)
+
 
 from recommender import build_model,recommend
+import recommender
+
+st.write("RECOMMENDER FILE:", recommender.__file__)
+st.write("HAS BUILD MODEL:", hasattr(recommender, "build_model"))
+st.write("HAS RECOMMEND:", hasattr(recommender, "recommend"))
 st.markdown("""
 <style>
 

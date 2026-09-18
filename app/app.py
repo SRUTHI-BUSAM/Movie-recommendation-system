@@ -5,8 +5,20 @@ import sys
 import requests
 from dotenv import load_dotenv
 
+st.set_page_config(page_title="Movie Recommendation System")
+
 load_dotenv()
+
+# Get API key from .env locally
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
+
+# Get API key from Streamlit Cloud Secrets
+if not TMDB_API_KEY:
+    try:
+        TMDB_API_KEY = st.secrets["TMDB_API_KEY"]
+    except (FileNotFoundError, KeyError):
+        TMDB_API_KEY = None
+
 if not TMDB_API_KEY:
     st.error("TMDB API key is not configured.")
     st.stop()
@@ -44,28 +56,43 @@ def fetch_movie_details(movie_name):
     return None
 
 def fetch_trailer(movie_name):
+    try:
+        search_url = (
+            "https://api.themoviedb.org/3/search/movie"
+            f"?api_key={TMDB_API_KEY}&query={movie_name}"
+        )
 
-    api_key =TMDB_API_KEY
+        movie_data = requests.get(
+            search_url,
+            timeout=10
+        ).json()
 
-    search_url = f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query={movie_name}"
-
-    movie_data = requests.get(search_url, timeout=10).json()
-
-    if "results" in movie_data and movie_data["results"]:
+        if "results" not in movie_data or not movie_data["results"]:
+            return None
 
         movie_id = movie_data["results"][0]["id"]
 
-        trailer_url = f"https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key={api_key}"
+        trailer_url = (
+            f"https://api.themoviedb.org/3/movie/"
+            f"{movie_id}/videos?api_key={TMDB_API_KEY}"
+        )
 
-        videos = requests.get(trailer_url, timeout=10).json()
+        videos = requests.get(
+            trailer_url,
+            timeout=10
+        ).json()
 
-        for video in videos["results"]:
-
-            if video["site"] == "YouTube":
-
+        for video in videos.get("results", []):
+            if (
+                video.get("site") == "YouTube"
+                and video.get("type") == "Trailer"
+            ):
                 return f"https://www.youtube.com/watch?v={video['key']}"
 
-    return None
+        return None
+
+    except Exception:
+        return None
 
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -74,9 +101,7 @@ MODELS_PATH = os.path.join(CURRENT_DIR, "..", "models")
 
 sys.path.append(SRC_PATH)
 
-from recommender import recommend
-
-st.set_page_config(page_title="Movie Recommendation System")
+from recommender import build_model,recommend
 st.markdown("""
 <style>
 
@@ -118,6 +143,12 @@ movies_path = os.path.join(MODELS_PATH, "movies.pkl")
 movies = pickle.load(open(movies_path, "rb"))
 movie_list = movies['title'].values
 
+@st.cache_resource
+def load_recommender_model(movies):
+    return build_model(movies)
+
+tfidf, vectors = load_recommender_model(movies)
+
 search_movie = st.text_input(
     "🔍 Search Movie"
 )
@@ -135,7 +166,9 @@ if st.button("Recommend"):
 
     st.session_state.recommendations = recommend(
         selected_movie,
-        movies
+        movies,
+        tfidf,
+        vectors
     )
 
 recommendations = st.session_state.recommendations
